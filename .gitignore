@@ -1,0 +1,7 @@
+*.db
+*.db-journal
+*.sqlite3
+*.db-wal
+*.db-shm
+*.exe
+binary

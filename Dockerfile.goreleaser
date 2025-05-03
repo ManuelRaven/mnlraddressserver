@@ -1,0 +1,11 @@
+FROM alpine:latest
+
+# Install CA certificates for HTTPS
+RUN apk --no-cache add ca-certificates
+
+# Copy the pre-built binary from GoReleaser
+COPY mnlraddressserver /
+
+EXPOSE 8809
+
+ENTRYPOINT ["/mnlraddressserver"]

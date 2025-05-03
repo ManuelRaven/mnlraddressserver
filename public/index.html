@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address Server</title>
+    <style>
+      :root {
+        --primary: #3498db;
+        --secondary: #2ecc71;
+        --dark: #2c3e50;
+        --light: #ecf0f1;
+        --accent: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      body {
+        background-color: var(--light);
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 1rem;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .nav-link {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.3);
+        font-weight: bold;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .features {
+        padding: 4rem 0;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .feature-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-card h3 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: var(--accent);
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        margin-top: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn:hover {
+        background-color: #c0392b;
+        transform: scale(1.05);
+      }
+
+      footer {
+        background-color: var(--dark);
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+        margin-top: 2rem;
+      }
+
+      /* Search demo styles */
+      .search-demo {
+        padding: 4rem 0;
+        background-color: white;
+      }
+
+      .search-container {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .search-input-container {
+        position: relative;
+        margin-bottom: 2rem;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 2px solid #ddd;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 0.5rem;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+      }
+
+      .autocomplete-container {
+        position: absolute;
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+        display: none;
+      }
+
+      .autocomplete-item {
+        padding: 0.75rem 1.5rem;
+        text-align: left;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background-color 0.2s ease;
+      }
+
+      .autocomplete-item:hover {
+        background-color: #f5f5f5;
+      }
+
+      .results-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .address-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: left;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+      }
+
+      .address-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .address-card h4 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .address-card p {
+        margin: 0.2rem 0;
+        color: var(--dark);
+      }
+
+      .address-coords {
+        margin-top: 0.5rem;
+        color: #777;
+        font-size: 0.9rem;
+      }
+      .spinner {
+        display: none;
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+        margin: 1rem auto;
+        z-index: 50;
+        position: relative;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .subtitle {
+          font-size: 1.2rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .nav-links {
+        margin-top: 1rem;
+      }
+
+      .nav-link {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 0 1rem;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: #f39c12;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="hero">
+          <h1>Address Server</h1>
+          <p class="subtitle">Fast and efficient address geocoding</p>
+          <div class="nav-links">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/admin.html" class="nav-link">Admin</a>
+            <a href="/api/docs" class="nav-link">API Docs</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Add search demo section -->
+    <section class="search-demo">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: 2rem">
+          Try Our Address Search
+        </h2>
+        <div class="search-container">
+          <div class="search-input-container">
+            <input
+              type="text"
+              class="search-input"
+              id="searchInput"
+              placeholder="Type an address (e.g., 'Hauptstraße Berlin')..."
+              autocomplete="off"
+            />
+            <div
+              class="autocomplete-container"
+              id="autocompleteContainer"
+            ></div>
+          </div>
+          <div class="spinner" id="spinner"></div>
+          <div class="results-container" id="resultsContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: 2rem">Key Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>Address Management</h3>
+            <p>
+              Store and manage addresses with ease. Our system handles
+              formatting and validation automatically.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Geocoding</h3>
+            <p>
+              Convert addresses to geographic coordinates and vice versa with
+              our precise geocoding service.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Fulltext Search</h3>
+            <p>
+              Quickly find addresses with our powerful fulltext search
+              capabilities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Address Server. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const autocompleteContainer = document.getElementById(
+          "autocompleteContainer"
+        );
+        const resultsContainer = document.getElementById("resultsContainer");
+        const spinner = document.getElementById("spinner");
+        let debounceTimer;
+        // Listen for input in the search box
+        searchInput.addEventListener("input", function (e) {
+          const query = e.target.value.trim();
+
+          // Clear previous timer
+          clearTimeout(debounceTimer);
+
+          // Hide autocomplete if query is empty
+          if (query.length === 0) {
+            autocompleteContainer.style.display = "none";
+            spinner.style.display = "none"; // Hide spinner if input is cleared
+            return;
+          }
+
+          // Set a debounce timer to avoid too many API calls
+          debounceTimer = setTimeout(() => {
+            // Only search if we have at least 2 characters
+            if (query.length >= 2) {
+              searchAutocomplete(query);
+            }
+          }, 300);
+        });
+
+        // Handle click outside of autocomplete to close it
+        document.addEventListener("click", function (e) {
+          if (e.target !== searchInput && e.target !== autocompleteContainer) {
+            autocompleteContainer.style.display = "none";
+          }
+        });
+        // Function to fetch autocomplete suggestions
+        function searchAutocomplete(query) {
+          const url = `/api/search?q=${encodeURIComponent(query)}`;
+
+          // Show loading spinner for autocomplete request
+          spinner.style.display = "block";
+
+          fetch(url)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Hide spinner after getting results
+              spinner.style.display = "none";
+
+              // Clear previous autocomplete results
+              autocompleteContainer.innerHTML = "";
+
+              if (data.addresses && data.addresses.length > 0) {
+                // Show autocomplete container
+                autocompleteContainer.style.display = "block";
+
+                // Create a Set to track unique addresses (by street/house_number/city)
+                const uniqueAddresses = new Map();
+
+                // Add unique addresses to the map
+                data.addresses.forEach((address) => {
+                  const key = `${address.street}-${address.house_number}-${address.city}`;
+                  if (!uniqueAddresses.has(key)) {
+                    uniqueAddresses.set(key, address);
+                  }
+                });
+
+                // Display autocomplete suggestions (limited to first 10)
+                Array.from(uniqueAddresses.values())
+                  .slice(0, 10)
+                  .forEach((address) => {
+                    const item = document.createElement("div");
+                    item.className = "autocomplete-item";
+                    item.textContent = `${address.street} ${address.house_number}, ${address.city}`;
+                    // Add click event to select this suggestion
+                    item.addEventListener("click", function () {
+                      searchInput.value = `${address.street} ${address.house_number}, ${address.city}`;
+                      autocompleteContainer.style.display = "none";
+                      spinner.style.display = "none"; // Hide autocomplete spinner first
+                      performSearch(searchInput.value); // Will show spinner for full search
+                    });
+
+                    autocompleteContainer.appendChild(item);
+                  });
+              } else {
+                autocompleteContainer.style.display = "none";
+              }
+            })
+            .catch((error) => {
+              // Hide spinner in case of error
+              spinner.style.display = "none";
+              console.error("Error fetching autocomplete:", error);
+            });
+        }
+
+        // Function to perform a full search
+        function performSearch(query) {
+          // Show loading spinner
+          spinner.style.display = "block";
+          resultsContainer.innerHTML = "";
+
+          const url = `/api/search?q=${encodeURIComponent(query)}`;
+
+          fetch(url)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Hide spinner
+              spinner.style.display = "none";
+
+              // Clear previous results
+              resultsContainer.innerHTML = "";
+
+              if (data.addresses && data.addresses.length > 0) {
+                // Create header for results
+                const resultHeader = document.createElement("h3");
+                resultHeader.textContent = `Found ${data.addresses.length} addresses`;
+                resultHeader.style.marginBottom = "1rem";
+                resultHeader.style.textAlign = "left";
+                resultsContainer.appendChild(resultHeader);
+
+                // Display results
+                data.addresses.forEach((address) => {
+                  const card = document.createElement("div");
+                  card.className = "address-card";
+
+                  // Create and add content to card
+                  const title = document.createElement("h4");
+                  title.textContent = `${address.street} ${address.house_number}`;
+
+                  const city = document.createElement("p");
+                  city.textContent = address.city;
+
+                  const coords = document.createElement("p");
+                  coords.className = "address-coords";
+                  coords.textContent = `Coordinates: ${address.latitude.toFixed(
+                    6
+                  )}, ${address.longitude.toFixed(6)}`;
+
+                  // Add event to show on map (you could expand this functionality)
+                  card.addEventListener("click", function () {
+                    const mapUrl = `https://www.openstreetmap.org/?mlat=${address.latitude}&mlon=${address.longitude}&zoom=18`;
+                    window.open(mapUrl, "_blank");
+                  });
+
+                  // Append elements to card
+                  card.appendChild(title);
+                  card.appendChild(city);
+                  card.appendChild(coords);
+
+                  // Add card to results container
+                  resultsContainer.appendChild(card);
+                });
+              } else {
+                resultsContainer.innerHTML =
+                  "<p>No addresses found. Try a different search term.</p>";
+              }
+            })
+            .catch((error) => {
+              spinner.style.display = "none";
+              resultsContainer.innerHTML =
+                "<p>Error performing search. Please try again.</p>";
+              console.error("Error performing search:", error);
+            });
+        }
+        // Add event listener for search form submission
+        searchInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter" && searchInput.value.trim().length > 0) {
+            autocompleteContainer.style.display = "none";
+            spinner.style.display = "none"; // Hide any ongoing autocomplete spinner
+            performSearch(searchInput.value.trim());
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
