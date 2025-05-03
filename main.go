@@ -10,6 +10,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humago"
+	"github.com/rs/cors"
 	"mnlr.de/addressserver/specialroutes"
 	"mnlr.de/addressserver/sql"
 )
@@ -53,8 +54,9 @@ func main() {
 	mux.Handle("/", fs)
 
 	RegisterApi(api)
-
+	// Enable CORS for all routes
+	handler := cors.AllowAll().Handler(mux)
 	// Start the server!
-	http.ListenAndServe("0.0.0.0:8809", mux)
+	http.ListenAndServe("0.0.0.0:8809", handler)
 
 }
